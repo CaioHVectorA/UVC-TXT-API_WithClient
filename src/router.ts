@@ -40,7 +40,6 @@ router.get("/solo/:ref", async (req: Request, res: Response) => {
   });
   const allhists = await prisma.serie.findMany();
   info(allhists.map((item) => item.ref));
-  console.log(soloFound, req.params.ref);
   if (!soloFound)
     return res
       .status(404)
@@ -81,6 +80,8 @@ router.post("/serie", async (req: Request, res: Response) => {
 });
 
 router.post("/solo", async (req: Request, res: Response) => {
+  const allhists = await prisma.solo.findMany();
+  info(allhists.map((item) => item.ref));
   const newSolo = await prisma.solo.create({
     data: {
       ref: req.body.ref,
