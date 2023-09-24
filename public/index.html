@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hist creator</title>
+</head>
+<body>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+        <label for="numero">Numero de episodio(se houver)</label>
+        <input id="number" type="number">
+        <label for="opcoes">Selecione uma opção:</label>
+        <select id="opcoes" name="opcao" required>
+            <option value="S_KER">S_KER</option>
+            <option value="SE_CONG">SE_CONG</option>
+            <option value="S_HAD">S_HAD</option>
+            <option value="S_GFDM">S_GFDM</option>
+            <option value="SE_GUA">SE_GUA</option>
+            <option value="S_CIEC">S_CIEC</option>
+            <option value="SE_MR1">SE_MR1</option>
+            <option value="SE_RRH">SE_RRH</option>
+        </select>
+
+        <br>
+
+        <label for="arquivo">Selecione um arquivo .docx:</label>
+        <input type="file" id="arquivo" name="arquivo" accept=".docx" required>
+        
+        <br>
+
+        <button>Enviar</button>
+    <script>
+        function $(e) {return document.querySelector(e)}
+        function fetchData(res) {
+            if (!!($('#number').value)) {
+                fetch('/serie', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json' // Indica que estamos enviando JSON
+                },
+                body: JSON.stringify({num: parseInt($('#number').value),html: res, ref: $('#opcoes').value})
+                }).then(res => res.json()).then(data => alert('deu certo')).catch(err => {console.log(err) ; alert('deu caô')})
+            } else {
+                fetch('/solo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json' // Indica que estamos enviando JSON
+                },
+                body: JSON.stringify({html: res, ref: $('#opcoes').value})
+                }).then(res => res.json()).then(data => alert('deu certo')).catch(err => {console.log(err) ; alert('deu caô')})
+            }
+        } 
+        function convertToHTML() {
+            const docxInput = document.getElementById('arquivo');
+
+            if (docxInput.files.length === 0) {
+                alert('Selecione um arquivo .docx para converter.');
+                return;
+            }
+
+            const file = docxInput.files[0];
+            // Use mammoth para converter o arquivo .docx em HTML
+            mammoth.convertToHtml({ arrayBuffer: file })
+                .then(result => {
+                    // console.log(result.value)
+                    fetchData(result.value)
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }
+        $('button').addEventListener('click', convertToHTML)
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            width: 300px;
+            margin: 0 auto;
+        }
+
+        label {
+            font-size: 16px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        select, input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</body>
+</html>
